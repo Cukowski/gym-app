@@ -259,10 +259,10 @@
   // =============================
   const qs  = (s) => document.querySelector(s)
   const qsa = (s) => Array.from(document.querySelectorAll(s))
-  const on  = (sel, type, handler) => {
-    const el = typeof sel === 'string' ? qs(sel) : sel
-    if (!el || typeof el.addEventListener !== 'function') return;
-    el.addEventListener(type, handler, {passive:true})
+  const bind = (sel, type, handler) => {
+    const el = typeof sel === 'string' ? document.querySelector(sel) : sel
+    if (!el || typeof el.addEventListener !== 'function') return
+    el.addEventListener(type, handler, { passive: true })
   }
   const pad = (n) => String(n).padStart(2,'0')
   const fmtTime = (sec) => `${pad(Math.floor(sec/60))}:${pad(sec%60)}`
@@ -341,22 +341,22 @@
         const b = document.createElement('button')
         b.className = 'set-pill' + (e.done[i]?' done':'')
         b.textContent = i+1; b.title='Toggle set complete'
-        on(b,'click', ()=>toggleSet(idx,i,true))
+        bind(b,'click', ()=>toggleSet(idx,i,true))
         setsWrap.appendChild(b)
       }
 
       const w = tpl.querySelector('.weight'), n = tpl.querySelector('.notes')
       w.value = e.weight||''; n.value = e.notes||''
-      on(w,'change', ()=>{ e.weight=w.value; updateVolume(card,e); save() })
-      on(n,'change', ()=>{ e.notes=n.value; save() })
+      bind(w,'change', ()=>{ e.weight=w.value; updateVolume(card,e); save() })
+      bind(n,'change', ()=>{ e.notes=n.value; save() })
 
-      on(tpl.querySelector('.imgbox'), 'click', ()=>{
+      bind(tpl.querySelector('.imgbox'), 'click', ()=>{
         const next = e.done.findIndex(v=>!v); if(next>=0) toggleSet(idx,next,true)
       })
 
       updateVolume(card,e)
 
-      on(tpl.querySelector('.reset-ex'),'click',(ev)=>{
+      bind(tpl.querySelector('.reset-ex'),'click',(ev)=>{
         ev.preventDefault(); e.done=e.done.map(()=>false); e.weight=''; e.notes=''; render(); save()
       })
 
@@ -471,30 +471,30 @@
   // =============================
   // Events
   // =============================
-  qsa('.choice').forEach(ch => on(ch,'click', ()=> startSession(ch.dataset.go)))
-  on('#choose-custom','click', ()=> startSession('custom'))
-  on('#change-day','click', showLanding)
+  qsa('.choice').forEach(ch => bind(ch,'click', ()=> startSession(ch.dataset.go)))
+  bind('#choose-custom','click', ()=> startSession('custom'))
+  bind('#change-day','click', showLanding)
 
-  on('#session-select','change', (e)=>{
+  bind('#session-select','change', (e)=>{
     const val = e.target.value
     if(!load(val)) initSession(val); else { state.session=val; render(); save() }
   })
-  on('#new-workout','click', ()=>{
+  bind('#new-workout','click', ()=>{
     if(!state.session) return showLanding()
     if(confirm('Start a fresh workout for this session? This resets today\'s progress.')) initSession(state.session)
   })
-  on('#finish','click', showSummary)
-  on('#close-summary','click', ()=> qs('#summary')?.close())
+  bind('#finish','click', showSummary)
+  bind('#close-summary','click', ()=> qs('#summary')?.close())
 
-  on('#toggle-notes','click', ()=>{
+  bind('#toggle-notes','click', ()=>{
     qs('#notes').classList.toggle('hidden')
     qs('#workout-note')?.focus()
   })
-  on('#workout-note','change', (e)=>{ state.note = e.target.value; save() })
+  bind('#workout-note','change', (e)=>{ state.note = e.target.value; save() })
 
-  on('#start-rest','click', ()=> startRest(averageRestSec()))
-  on('#stop-rest','click', ()=> stopRest())
-  on('#add-30','click', ()=>{ if(restInterval){ restLeft+=30 } else { startRest(30) } })
+  bind('#start-rest','click', ()=> startRest(averageRestSec()))
+  bind('#stop-rest','click', ()=> stopRest())
+  bind('#add-30','click', ()=>{ if(restInterval){ restLeft+=30 } else { startRest(30) } })
 
   // =============================
   // Boot — show landing; autohide header when scrolled
