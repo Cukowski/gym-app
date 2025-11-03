@@ -10,16 +10,14 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%230b0d10'/%3E%3Cpath d='M10 34h44v-4H10v4zm6-10h8v16h-8V24zm24 0h8v16h-8V24z' fill='%236FE3A1'/%3E%3C/svg%3E" />
   <style>
     :root{
-      --bg:#0b0d10;          /* charcoal */
-      --card:#12151a;        /* dark slates */
+      --bg:#0b0d10;
+      --card:#12151a;
       --muted:#20252d;
-      --ink:#e6e9ef;         /* near white */
-      --ink-dim:#aeb7c6;     /* muted */
-      --accent:#6FE3A1;      /* mint */
-      --accent-2:#7AB8FF;    /* sky */
-      --danger:#ff6b6b;      /* coral */
-      --warn:#ffd166;        /* warm */
-      --ok:#8fd694;          /* leaf */
+      --ink:#e6e9ef;
+      --ink-dim:#aeb7c6;
+      --accent:#6FE3A1;
+      --accent-2:#7AB8FF;
+      --danger:#ff6b6b;
       --radius:18px;
       --shadow:0 10px 30px rgba(0,0,0,.35);
     }
@@ -29,68 +27,79 @@
       margin:0; font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--ink);
       background:radial-gradient(1200px 800px at 80% -20%, #17202b 0%, #0b0d10 55%), #0b0d10;
     }
-    .wrap{max-width:880px; margin:0 auto; padding:16px 14px 26vh;}
+    .wrap{max-width:880px; margin:0 auto; padding:12px 12px 26vh;}
     header{
       position:sticky; top:0; z-index:5; backdrop-filter:saturate(1.2) blur(8px);
       background:linear-gradient(180deg, rgba(11,13,16,.9), rgba(11,13,16,.6) 60%, rgba(11,13,16,0));
       border-bottom:1px solid rgba(255,255,255,.06);
     }
-    .h-grid{display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; padding:12px 14px;}
-    .brand{display:flex; gap:10px; align-items:center}
-    .logo{width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:var(--shadow); display:grid; place-items:center; font-weight:800; color:#0b0d10}
-    .brand h1{font-size:18px; margin:0; letter-spacing:.4px}
-    .clock{display:flex; flex-direction:column; gap:2px; align-items:end;}
-    .clock .now{font-weight:700; font-size:14px}
-    .clock .elapsed{font-size:12px; color:var(--ink-dim)}
-
-    .controls{display:flex; gap:8px; flex-wrap:wrap; padding:10px 14px 14px}
+    .h-grid{display:grid; grid-template-columns:auto 1fr auto; gap:8px; align-items:center; padding:8px 10px;}
+    .brand{display:flex; gap:8px; align-items:center}
+    .logo{width:30px; height:30px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:var(--shadow); display:grid; place-items:center; font-weight:800; color:#0b0d10; font-size:12px}
+    .brand h1{font-size:16px; margin:0; letter-spacing:.3px}
+    .clock{display:flex; flex-direction:column; gap:0; align-items:end;}
+    .clock .now{font-weight:700; font-size:12px}
+    .clock .elapsed{font-size:11px; color:var(--ink-dim)}
+    .controls{display:flex; gap:6px; flex-wrap:wrap; padding:6px 10px 10px}
     select, input[type="number"], input[type="text"]{
       background:var(--card); color:var(--ink); border:1px solid rgba(255,255,255,.08);
-      border-radius:12px; padding:10px 12px; font-size:14px; outline:none;
+      border-radius:10px; padding:8px 10px; font-size:14px; outline:none;
     }
-    button{background:var(--accent); color:#081014; border:none; padding:12px 14px; border-radius:14px; font-weight:800; letter-spacing:.3px; box-shadow:0 6px 20px rgba(111,227,161,.25);}
+    button{background:var(--accent); color:#081014; border:none; padding:10px 12px; border-radius:12px; font-weight:800; letter-spacing:.3px; box-shadow:0 6px 20px rgba(111,227,161,.25);}
     button.ghost{background:transparent; color:var(--ink); border:1px solid rgba(255,255,255,.12)}
-    button.warn{background:var(--warn); color:#2a2100}
+    button.pill{border:1px solid rgba(255,255,255,.12); color:var(--ink); background:var(--card); padding:10px 12px; border-radius:12px; text-align:center}
     button.danger{background:var(--danger)}
 
-    .restbar{margin:0 14px 12px; background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:12px; display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center}
-    .progress{height:10px; background:var(--muted); border-radius:999px; overflow:hidden}
-    .progress > span{display:block; height:100%; background:linear-gradient(90deg,var(--accent),var(--accent-2)); width:0%}
-    .timer{font-variant-numeric:tabular-nums; font-weight:800}
-
-    .session-meta{display:flex; gap:10px; align-items:center; color:var(--ink-dim); font-size:12px; padding:0 14px 14px}
+    .session-meta{display:flex; gap:8px; align-items:center; color:var(--ink-dim); font-size:12px; padding:0 10px 10px}
     .meta-pill{border:1px solid rgba(255,255,255,.08); background:var(--card); border-radius:999px; padding:6px 10px}
 
-    .grid{display:grid; gap:12px; grid-template-columns:1fr;}
+    .grid{display:grid; gap:10px; grid-template-columns:1fr;}
     @media(min-width:700px){ .grid{grid-template-columns:1fr 1fr;} }
 
-    .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); padding:12px; box-shadow:var(--shadow); display:grid; gap:10px}
+    .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); padding:10px; box-shadow:var(--shadow); display:grid; gap:8px}
     .row{display:flex; justify-content:space-between; align-items:center; gap:8px}
     .title{font-weight:800; letter-spacing:.3px}
     .subtitle{color:var(--ink-dim); font-size:12px}
-    .imgbox{position:relative; border-radius:14px; overflow:hidden; aspect-ratio:16/9; background:linear-gradient(135deg,#1a1f27,#101419); display:grid; place-items:center;}
-    .imgbox img{width:100%; height:100%; object-fit:cover; opacity:.9}
-    .tap{position:absolute; bottom:8px; right:8px; background:rgba(8,10,12,.6); border:1px solid rgba(255,255,255,.15); color:var(--ink); padding:6px 10px; border-radius:999px; font-size:12px; backdrop-filter:blur(6px)}
+
+    /* Square-first media, 4:3 on wide screens */
+    .imgbox{position:relative; border-radius:12px; overflow:hidden; aspect-ratio:1/1; background:linear-gradient(135deg,#1a1f27,#101419); display:grid; place-items:center;}
+    @media(min-width:700px){ .imgbox{aspect-ratio:4/3;} }
+    .imgbox img{
+      width:100%; height:100%;
+      object-fit:contain; background:#0d1117; image-rendering:auto;
+    }
+    .tap{position:absolute; bottom:6px; right:6px; background:rgba(8,10,12,.55); border:1px solid rgba(255,255,255,.15); color:var(--ink); padding:6px 9px; border-radius:999px; font-size:11px; backdrop-filter:blur(6px)}
 
     .sets{display:flex; gap:6px; flex-wrap:wrap}
-    .set-pill{min-width:34px; text-align:center; padding:8px 10px; border-radius:12px; border:1px solid rgba(255,255,255,.1); background:#12161d; font-weight:700; font-size:12px; color:var(--ink-dim)}
+    .set-pill{min-width:34px; text-align:center; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.1); background:#12161d; font-weight:700; font-size:12px; color:var(--ink-dim)}
     .set-pill.done{background:linear-gradient(135deg, #1f3b29, #14311f); color:#bff2c8; border-color:#275f3c}
 
     .weight-row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
     .weight-row input{width:100%}
 
+    /* Landing */
+    .landing{padding:12px 10px 4px;}
+    .choices{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .choice{
+      border:1px solid rgba(255,255,255,.1); background:var(--card); border-radius:14px; padding:14px;
+      display:grid; gap:10px; box-shadow:var(--shadow); cursor:pointer;
+    }
+    .choice .big{font-weight:800; font-size:16px}
+    .choice .small{font-size:12px; color:var(--ink-dim)}
+
     .footer{
-      position:fixed; left:0; right:0; bottom:0; z-index:10; 
+      position:fixed; left:0; right:0; bottom:0; z-index:10;
       background:linear-gradient(180deg, rgba(11,13,16,0), rgba(11,13,16,.9) 35%, rgba(11,13,16,1));
-      padding:18px 12px 20px; border-top:1px solid rgba(255,255,255,.08);
+      padding:14px 10px 14px; border-top:1px solid rgba(255,255,255,.08);
     }
     .footer .bar{display:grid; grid-template-columns:1fr 1fr auto auto auto auto; gap:6px}
-    .pill{border:1px solid rgba(255,255,255,.12); color:var(--ink); background:var(--card); padding:12px; border-radius:14px; text-align:center}
-
     .note{font-size:12px; color:var(--ink-dim)}
     .hidden{display:none!important}
     .small{font-size:12px}
     .link{color:var(--accent-2); text-decoration:none}
+
+    /* Autohide strip */
+    .autohide{transition:opacity .25s ease}
   </style>
 </head>
 <body>
@@ -100,12 +109,13 @@
         <div class="logo">IT</div>
         <h1>Iron Tempo</h1>
       </div>
+      <div></div>
       <div class="clock">
         <div class="now" id="clock-now">--:--</div>
         <div class="elapsed">Workout <span id="elapsed">00:00:00</span></div>
       </div>
     </div>
-    <div class="controls autohide">
+    <div class="controls autohide" id="controls">
       <select id="session-select" title="Session">
         <option value="push">Push (Chest/Shoulders/Triceps)</option>
         <option value="pull">Pull (Back/Biceps)</option>
@@ -113,28 +123,32 @@
         <option value="power">Power/Conditioning</option>
         <option value="custom">Custom</option>
       </select>
-      <button class="ghost" id="new-workout">New Workout</button>
+      <button class="ghost" id="new-workout">New</button>
       <button class="ghost" id="export">Export</button>
       <input id="import-file" class="hidden" type="file" accept="application/json" />
       <button class="ghost" id="import">Import</button>
-    </div>
-    <div class="timer" id="rest-time">00:00</div>
-          </div>
-          <div class="small">Default rest per exercise: <span id="default-rest">90</span>s</div>
-        </div>
-        <div class="progress" aria-label="Rest Progress"><span id="rest-progress"></span></div>
-      </div>
-      <div class="row" style="gap:6px">
-        <button id="start-rest" class="pill">Start</button>
-        <button id="stop-rest" class="pill">Stop</button>
-        <button id="add-30" class="pill">+30s</button>
-      </div>
+      <button class="pill" id="change-day">Change Day</button>
     </div>
     <div class="session-meta" id="session-meta"></div>
   </header>
 
   <main class="wrap">
-    <section class="grid" id="cards"></section>
+    <!-- Landing -->
+    <section id="landing" class="landing">
+      <div class="choices">
+        <div class="choice" data-go="push"><div class="big">Push</div><div class="small">Chest • Shoulders • Triceps</div></div>
+        <div class="choice" data-go="pull"><div class="big">Pull</div><div class="small">Back • Biceps • Rear Delts</div></div>
+        <div class="choice" data-go="legs"><div class="big">Legs</div><div class="small">Quads • Hamstrings • Core</div></div>
+        <div class="choice" data-go="power"><div class="big">Power</div><div class="small">Full-body • Conditioning</div></div>
+      </div>
+      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+        <button class="pill" id="choose-custom">Custom</button>
+        <button class="pill" id="resume" style="display:none">Resume today’s session</button>
+      </div>
+    </section>
+
+    <!-- Exercise cards -->
+    <section class="grid hidden" id="cards"></section>
   </main>
 
   <footer class="footer">
@@ -194,74 +208,97 @@
 
   <script>
   // =============================
-  // Data & Session Templates
+  // TEMPLATES (exactly as requested)
   // =============================
   const TEMPLATES = {
     push: [
       { name:"Barbell Bench Press", sets:5, reps:"5", rest:120, img:"assets/bench-press.gif" },
-      { name:"Overhead Shoulder Press", sets:4, reps:"8", rest:90, img:"assets/overhead-press.webp" },
-      { name:"Incline DB Press", sets:3, reps:"10", rest:75, img:"assets/incline-db-press.webp" },
-      { name:"Chest Fly (DB/Machine)", sets:3, reps:"12", rest:60, img:"assets/chest-fly.webp" },
-      { name:"Triceps Dips (weighted if possible)", sets:3, reps:"max", rest:90, img:"assets/dips.webp" },
-      { name:"EZ Bar Skull Crushers", sets:3, reps:"10", rest:60, img:"assets/skull-crushers.webp" },
-      { name:"Finisher — Push-ups", sets:3, reps:"15 (or failure)", rest:60, img:"assets/push-ups.webp" },
-      { name:"Finisher — Overhead Press (Light)", sets:3, reps:"10", rest:60, img:"assets/ohp-light.webp" },
+      { name:"Overhead Shoulder Press", sets:4, reps:"8", rest:90, img:"assets/dumbbell-shoulder-press.gif" },
+      { name:"Incline DB Press", sets:3, reps:"10", rest:75, img:"assets/incline-db-press.gif" },
+      { name:"Chest Fly (DB/Machine)", sets:3, reps:"12", rest:60, img:"assets/chest-fly-dumbells.gif" },
+      { name:"Triceps Dips (weighted if possible)", sets:3, reps:"max", rest:90, img:"assets/tricep-dips.gif" },
+      { name:"EZ Bar Skull Crushers", sets:3, reps:"10", rest:60, img:"assets/skull-crushers.gif" },
+      { name:"Finisher — Push-ups", sets:3, reps:"15 (or failure)", rest:60, img:"assets/push-up.gif" },
+      { name:"Finisher — Overhead Press (Light)", sets:3, reps:"10", rest:60, img:"assets/overhead-press.gif" },
     ],
     pull: [
-      { name:"Deadlift", sets:5, reps:"5", rest:150, img:"https://placehold.co/640x360?text=Deadlift" },
-      { name:"Lat Pulldown", sets:4, reps:"10", rest:90, img:"https://placehold.co/640x360?text=Lat+Pulldown" },
-      { name:"Barbell Row", sets:4, reps:"8", rest:90, img:"https://placehold.co/640x360?text=Barbell+Row" },
-      { name:"Seated Row (Machine)", sets:3, reps:"10", rest:75, img:"https://placehold.co/640x360?text=Seated+Row" },
-      { name:"EZ Bar Curl", sets:4, reps:"10", rest:60, img:"https://placehold.co/640x360?text=EZ+Curl" },
+      { name:"Deadlift", sets:5, reps:"5", rest:150, img:"assets/barbell-deadlift.webp" },
+      { name:"Lat Pulldown (wide grip)", sets:4, reps:"8–12", rest:90, img:"assets/lat-pulldown.gif" },
+      { name:"Barbell Bent-Over Row", sets:4, reps:"8", rest:90, img:"assets/barbell-row.gif" },
+      { name:"Seated Row (Machine)", sets:3, reps:"10", rest:75, img:"assets/seated-row-machine.gif" },
+      { name:"EZ Bar Curl", sets:4, reps:"10", rest:60, img:"assets/ez-bar-curl.gif" },
+      { name:"Incline DB Curl (slow negatives)", sets:3, reps:"12", rest:60, img:"assets/incline-db-curl.gif" },
+      { name:"Face Pulls / Rear Delt Fly", sets:3, reps:"15", rest:45, img:"assets/face-pull.gif" },
+      { name:"Finisher — Biceps 21s", sets:1, reps:"21s protocol", rest:60, img:"assets/biceps-21s.gif" },
     ],
     legs: [
-      { name:"Back Squat", sets:5, reps:"5", rest:150, img:"https://placehold.co/640x360?text=Back+Squat" },
-      { name:"Romanian Deadlift", sets:4, reps:"8", rest:120, img:"https://placehold.co/640x360?text=RDL" },
-      { name:"Walking Lunges", sets:3, reps:"12/leg", rest:90, img:"https://placehold.co/640x360?text=Walking+Lunge" },
-      { name:"Leg Press / Machine Squat", sets:3, reps:"10", rest:90, img:"https://placehold.co/640x360?text=Leg+Press" },
-      { name:"Hanging Leg Raise", sets:3, reps:"15", rest:45, img:"https://placehold.co/640x360?text=Leg+Raise" },
+      { name:"Back Squat", sets:5, reps:"5", rest:150, img:"assets/back-squat.gif" },
+      { name:"Romanian Deadlift", sets:4, reps:"8", rest:120, img:"assets/romanian-deadlift.gif" },
+      { name:"Walking Lunges", sets:3, reps:"12/leg", rest:90, img:"assets/walking-lunge.gif" },
+      { name:"Leg Press / Machine Squat", sets:3, reps:"10", rest:90, img:"assets/leg-press.gif" },
+      { name:"Weighted Hanging Leg Raise", sets:3, reps:"15", rest:45, img:"assets/hanging-leg-raise.gif" },
+      { name:"Plank Variations", sets:3, reps:"60s hold", rest:45, img:"assets/plank-variations.gif" },
+      { name:"Finisher — Bodyweight Squat Dropset", sets:3, reps:"AMRAP (no rest)", rest:0, img:"assets/bodyweight-squat.gif" },
     ],
     power: [
-      { name:"Front Squat", sets:4, reps:"6", rest:120, img:"https://placehold.co/640x360?text=Front+Squat" },
-      { name:"Clean & Press", sets:4, reps:"6", rest:120, img:"https://placehold.co/640x360?text=Clean+%26+Press" },
-      { name:"DB Snatch (Alt)", sets:3, reps:"8/side", rest:75, img:"https://placehold.co/640x360?text=DB+Snatch" },
-      { name:"Farmer's Carry", sets:4, reps:"40m", rest:60, img:"https://placehold.co/640x360?text=Farmer's+Carry" },
-      { name:"Burpees + Jump Squats", sets:3, reps:"20+20", rest:60, img:"https://placehold.co/640x360?text=Burpees+%2B+Jumps" },
+      { name:"Front Squat", sets:4, reps:"6", rest:120, img:"assets/front-squat.gif" },
+      { name:"Clean & Press", sets:4, reps:"6", rest:120, img:"assets/clean-and-press.gif" },
+      { name:"DB Snatch (alternating)", sets:3, reps:"8/side", rest:75, img:"assets/db-snatch.gif" },
+      { name:"Farmer's Carry", sets:4, reps:"40m", rest:60, img:"assets/farmers-carry.gif" },
+      { name:"Burpees + Jump Squats", sets:3, reps:"20+20", rest:60, img:"assets/burpees-jump-squats.gif" },
+      { name:"Plank→Push-up + Mountain Climbers", sets:3, reps:"circuit", rest:60, img:"assets/plank-to-pushup-mountain-climbers.gif" },
+      { name:"Finisher — 10-min AMRAP (PU/DL/Rows/JS)", sets:1, reps:"10-min AMRAP (10/10/10/10)", rest:0, img:"assets/amrap-circuit.gif" },
     ],
     custom: [
-      { name:"Custom Exercise", sets:3, reps:"10", rest:90, img:"https://placehold.co/640x360?text=Custom+Exercise" }
+      { name:"Custom Exercise", sets:3, reps:"10", rest:90, img:"assets/custom-exercise.gif" }
     ]
   }
 
   // =============================
-  // Helpers
+  // Helpers (guarded bindings)
   // =============================
-  const qs = (s) => document.querySelector(s)
+  const qs  = (s) => document.querySelector(s)
   const qsa = (s) => Array.from(document.querySelectorAll(s))
-
+  const on  = (sel, type, handler) => {
+    const el = typeof sel === 'string' ? qs(sel) : sel
+    if (!el || typeof el.addEventListener !== 'function') return;
+    el.addEventListener(type, handler, {passive:true})
+  }
   const pad = (n) => String(n).padStart(2,'0')
   const fmtTime = (sec) => `${pad(Math.floor(sec/60))}:${pad(sec%60)}`
-  const fmtHMS = (s)=>{
-    const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=(s%60)
-    return `${pad(h)}:${pad(m)}:${pad(sec)}`
-  }
-
+  const fmtHMS = (s)=>`${pad(Math.floor(s/3600))}:${pad(Math.floor((s%3600)/60))}:${pad(s%60)}`
   const storageKey = (dateStr, session)=>`iron-tempo::${dateStr}::${session}`
-  const todayKey = ()=>{
-    const d=new Date();
-    return d.toISOString().slice(0,10)
-  }
-
+  const todayKey = ()=> new Date().toISOString().slice(0,10)
   const vibrate = (ms=200)=>('vibrate' in navigator) && navigator.vibrate(ms)
 
   // =============================
   // State
   // =============================
-  let state = {
-    session:'push',
-    startedAt: Date.now(),
-    note:'',
-    ex:[] // exercises with per-set done flags, weight, notes
+  let state = { session:null, startedAt:null, note:'', ex:[] }
+
+  // =============================
+  // Landing / Session switching
+  // =============================
+  function showLanding(){
+    qs('#landing').classList.remove('hidden')
+    qs('#cards').classList.add('hidden')
+    qs('#controls').classList.add('hidden')
+    qs('#session-meta').innerHTML = ''
+    const last = localStorage.getItem('iron-tempo::last-session')
+    const resumeBtn = qs('#resume')
+    if (last && localStorage.getItem(storageKey(todayKey(), last))) {
+      resumeBtn.style.display = ''
+      resumeBtn.onclick = ()=> startSession(last, true)
+    } else resumeBtn.style.display = 'none'
+  }
+  function startSession(session, resume=false){
+    state.session = session
+    qs('#controls').classList.remove('hidden')
+    const sel = qs('#session-select'); if (sel) sel.value = session
+    localStorage.setItem('iron-tempo::last-session', session)
+    if (resume && load(session)) render(); else initSession(session)
+    qs('#landing').classList.add('hidden')
+    qs('#cards').classList.remove('hidden')
   }
 
   // =============================
@@ -275,72 +312,52 @@
       name:e.name, sets:e.sets, reps:e.reps, rest:e.rest, img:e.img,
       done:Array.from({length:e.sets}, ()=>false), weight:'', notes:''
     }))
-    render()
-    save()
+    render(); save()
   }
 
   function render(){
-    // header meta
     const totalSets = state.ex.reduce((a,e)=>a+e.sets,0)
-    const doneSets = state.ex.reduce((a,e)=>a+e.done.filter(Boolean).length,0)
-    const meta = [
-      `${state.session.toUpperCase()}`,
+    const doneSets  = state.ex.reduce((a,e)=>a+e.done.filter(Boolean).length,0)
+    const started   = state.startedAt ? new Date(state.startedAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '--:--'
+    qs('#session-meta').innerHTML = [
+      state.session ? state.session.toUpperCase() : '—',
       `Sets: ${doneSets}/${totalSets}`,
-      `Started: ${new Date(state.startedAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`
-    ]
-    qs('#session-meta').innerHTML = meta.map(x=>`<span class="meta-pill">${x}</span>`).join('')
+      `Started: ${started}`
+    ].map(x=>`<span class="meta-pill">${x}</span>`).join('')
 
     qs('#default-rest-foot').textContent = averageRestSec()
 
-    const container = qs('#cards')
-    container.innerHTML = ''
-
+    const container = qs('#cards'); container.innerHTML = ''
     state.ex.forEach((e,idx)=>{
       const tpl = document.importNode(qs('#card-tpl').content, true)
-      const card = tpl.querySelector('.card')
-      card.dataset.ex = idx
+      const card = tpl.querySelector('.card'); card.dataset.ex = idx
       tpl.querySelector('.ex-name').textContent = e.name
       tpl.querySelector('.ex-meta').textContent = `${e.sets} × ${e.reps}`
       tpl.querySelector('.ex-rest').textContent = `Rest: ${e.rest}s`
-      const img = tpl.querySelector('img')
-      img.src = e.img
-      img.alt = e.name
+      const img = tpl.querySelector('img'); img.src = e.img; img.alt = e.name
 
-      // sets
       const setsWrap = tpl.querySelector('.sets')
-      setsWrap.innerHTML = ''
       for(let i=0;i<e.sets;i++){
         const b = document.createElement('button')
         b.className = 'set-pill' + (e.done[i]?' done':'')
-        b.textContent = i+1
-        b.title = 'Toggle set complete'
-        b.addEventListener('click', ()=>toggleSet(idx,i,true))
+        b.textContent = i+1; b.title='Toggle set complete'
+        on(b,'click', ()=>toggleSet(idx,i,true))
         setsWrap.appendChild(b)
       }
 
-      // weight & notes
-      const w = tpl.querySelector('.weight')
-      const n = tpl.querySelector('.notes')
-      w.value = e.weight || ''
-      n.value = e.notes || ''
-      w.addEventListener('change', ()=>{ e.weight=w.value; updateVolume(card, e); save() })
-      n.addEventListener('change', ()=>{ e.notes=n.value; save() })
+      const w = tpl.querySelector('.weight'), n = tpl.querySelector('.notes')
+      w.value = e.weight||''; n.value = e.notes||''
+      on(w,'change', ()=>{ e.weight=w.value; updateVolume(card,e); save() })
+      on(n,'change', ()=>{ e.notes=n.value; save() })
 
-      // tap image advances next set and starts rest
-      tpl.querySelector('.imgbox').addEventListener('click', ()=>{
-        const next = e.done.findIndex(v=>!v)
-        if(next>=0){ toggleSet(idx, next, true) }
+      on(tpl.querySelector('.imgbox'), 'click', ()=>{
+        const next = e.done.findIndex(v=>!v); if(next>=0) toggleSet(idx,next,true)
       })
 
-      // volume
-      updateVolume(card, e)
+      updateVolume(card,e)
 
-      // reset
-      tpl.querySelector('.reset-ex').addEventListener('click', (ev)=>{
-        ev.preventDefault()
-        e.done = e.done.map(()=>false)
-        e.weight=''; e.notes=''
-        render(); save()
+      on(tpl.querySelector('.reset-ex'),'click',(ev)=>{
+        ev.preventDefault(); e.done=e.done.map(()=>false); e.weight=''; e.notes=''; render(); save()
       })
 
       container.appendChild(tpl)
@@ -348,7 +365,8 @@
   }
 
   function updateVolume(card, e){
-    const vol = (parseFloat(e.weight||'0')||0) * e.done.filter(Boolean).length *  (/[0-9]+/.test(e.reps)? parseInt(e.reps): 1)
+    const repsBase = (/^\d+/.test(e.reps)? parseInt(e.reps): 1)
+    const vol = (parseFloat(e.weight||'0')||0) * e.done.filter(Boolean).length * repsBase
     card.querySelector('.vol').textContent = `Volume: ${vol.toLocaleString()} kg`
   }
 
@@ -361,45 +379,39 @@
     const e = state.ex[exIdx]
     e.done[setIdx] = !e.done[setIdx]
     render(); save()
-
-    // if a set marked done, start rest matching this exercise
     if(e.done[setIdx] && startRestToo){
       startRest(e.rest)
-      try{ const pills = qsa(`article.card[data-ex="${exIdx}"] .set-pill`) ; pills[setIdx]?.scrollIntoView({behavior:'smooth', block:'center'}) }catch{}
+      try{ qsa(`article.card[data-ex="${exIdx}"] .set-pill`)[setIdx]?.scrollIntoView({behavior:'smooth', block:'center'}) }catch{}
     }
   }
 
   // =============================
-  // Rest Timer Logic
+  // Rest Timer Logic (footer-only)
   // =============================
-  let restInterval = null
-  let restLeft = 0
-  let restTotal = 0
-
+  let restInterval = null, restLeft = 0, restTotal = 0
   function startRest(sec){
     stopRest()
-    restLeft = sec
-    restTotal = sec
-    qs('#rest-time-foot').textContent = fmtTime(restLeft)
+    restLeft = sec; restTotal = sec
+    const foot = qs('#rest-time-foot')
+    if (foot) foot.textContent = fmtTime(restLeft)
     restInterval = setInterval(()=>{
       restLeft--
       if(restLeft <= 0){
-        qs('#rest-time-foot').textContent = 'GO!'; beep(); vibrate(300); stopRest(true)
+        if (foot) foot.textContent = 'GO!'
+        beep(); vibrate(300); stopRest(true)
       } else {
-        qs('#rest-time-foot').textContent = fmtTime(restLeft);
-        const p = 100 * (1 - restLeft / restTotal)
-        qs('#rest-progress').style.width = p.toFixed(1) + '%'
+        if (foot) foot.textContent = fmtTime(restLeft)
       }
     }, 1000)
   }
-  function stopRest(keepLabel=false){ if(restInterval){ clearInterval(restInterval); restInterval=null } if(!keepLabel){ const el=qs('#rest-time-foot'); if(el) el.textContent='—' } }
-    if(!keepLabel){ qs('#rest-time').textContent = '—' ; qs('#rest-progress').style.width='0%'}
-  
-
+  function stopRest(keepLabel=false){
+    if(restInterval){ clearInterval(restInterval); restInterval=null }
+    if(!keepLabel){ const foot = qs('#rest-time-foot'); if (foot) foot.textContent='—' }
+  }
   function beep(){
     const ctx = new (window.AudioContext||window.webkitAudioContext)()
     const o = ctx.createOscillator(); const g = ctx.createGain();
-    o.type = 'sine'; o.frequency.setValueAtTime(880, ctx.currentTime)
+    o.type='sine'; o.frequency.setValueAtTime(880, ctx.currentTime)
     g.gain.setValueAtTime(0.001, ctx.currentTime)
     g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02)
     g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25)
@@ -429,27 +441,22 @@
   // Summary
   // =============================
   function showSummary(){
-    const elapsedSec = Math.floor((Date.now() - state.startedAt)/1000)
+    const elapsedSec = state.startedAt ? Math.floor((Date.now() - state.startedAt)/1000) : 0
     const lines = []
-    lines.push(`<div><strong>Session:</strong> ${state.session.toUpperCase()}</div>`)
+    lines.push(`<div><strong>Session:</strong> ${state.session?.toUpperCase() || '—'}</div>`)
     lines.push(`<div><strong>Duration:</strong> ${fmtHMS(elapsedSec)}</div>`)
     if(state.note) lines.push(`<div><strong>Note:</strong> ${escapeHtml(state.note)}</div>`)
-
     const exTable = state.ex.map(e=>{
       const setsDone = e.done.filter(Boolean).length
       const repsBase = (/^\d+/.test(e.reps)? parseInt(e.reps): 1)
       const volume = (parseFloat(e.weight||'0')||0) * setsDone * repsBase
-      return `<li><strong>${escapeHtml(e.name)}</strong> — ${setsDone}/${e.sets} sets done, weight: ${e.weight||'-'} kg, vol: ${volume.toLocaleString()} kg` + (e.notes? ` <em>(${escapeHtml(e.notes)})</em>`:'') + `</li>`
+      return `<li><strong>${escapeHtml(e.name)}</strong> — ${setsDone}/${e.sets} sets, weight: ${e.weight||'-'} kg, vol: ${volume.toLocaleString()} kg${e.notes? ` <em>(${escapeHtml(e.notes)})</em>`:''}</li>`
     }).join('')
-
     lines.push(`<ul style="margin:8px 0 0 18px">${exTable}</ul>`)
     qs('#summary-body').innerHTML = lines.join('')
     qs('#summary').showModal()
   }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]))
-  }
+  function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])) }
 
   // =============================
   // Live Clock & Elapsed
@@ -457,91 +464,50 @@
   setInterval(()=>{
     const d=new Date();
     qs('#clock-now').textContent = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
-    const secs = Math.max(0, Math.floor((Date.now()-state.startedAt)/1000))
+    const secs = state.startedAt ? Math.max(0, Math.floor((Date.now()-state.startedAt)/1000)) : 0
     qs('#elapsed').textContent = fmtHMS(secs)
   }, 1000)
 
   // =============================
   // Events
   // =============================
-  qs('#session-select').addEventListener('change', (e)=>{
+  qsa('.choice').forEach(ch => on(ch,'click', ()=> startSession(ch.dataset.go)))
+  on('#choose-custom','click', ()=> startSession('custom'))
+  on('#change-day','click', showLanding)
+
+  on('#session-select','change', (e)=>{
     const val = e.target.value
-    // Try to load today's existing session; otherwise init
     if(!load(val)) initSession(val); else { state.session=val; render(); save() }
   })
-  qs('#new-workout').addEventListener('click', ()=>{
-    if(confirm('Start a fresh workout for this session? This resets today\'s progress.')){
-      initSession(state.session)
-    }
+  on('#new-workout','click', ()=>{
+    if(!state.session) return showLanding()
+    if(confirm('Start a fresh workout for this session? This resets today\'s progress.')) initSession(state.session)
   })
-  qs('#finish').addEventListener('click', showSummary)
-  qs('#close-summary').addEventListener('click', ()=>qs('#summary').close())
+  on('#finish','click', showSummary)
+  on('#close-summary','click', ()=> qs('#summary')?.close())
 
-  qs('#toggle-notes').addEventListener('click', ()=>{
+  on('#toggle-notes','click', ()=>{
     qs('#notes').classList.toggle('hidden')
-    qs('#workout-note').focus()
+    qs('#workout-note')?.focus()
   })
-  qs('#workout-note').addEventListener('change', (e)=>{ state.note = e.target.value; save() })
+  on('#workout-note','change', (e)=>{ state.note = e.target.value; save() })
 
-  qs('#start-rest').addEventListener('click', ()=>startRest(averageRestSec()))
-  qs('#stop-rest').addEventListener('click', ()=>stopRest())
-  qs('#add-30').addEventListener('click', ()=>{ if(restInterval){ restLeft+=30 } else { startRest(30) } })
-
-  qs('#export').addEventListener('click', ()=>{
-    const dump = { date: todayKey(), session: state.session, state }
-    const blob = new Blob([JSON.stringify(dump,null,2)], {type:'application/json'})
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url; a.download = `iron-tempo_${todayKey()}_${state.session}.json`
-    a.click(); URL.revokeObjectURL(url)
-  })
-  qs('#import').addEventListener('click', ()=>qs('#import-file').click())
-  qs('#import-file').addEventListener('change', (ev)=>{
-    const f = ev.target.files?.[0]; if(!f) return
-    const reader = new FileReader()
-    reader.onload = ()=>{
-      try{ const obj = JSON.parse(reader.result)
-        if(obj?.state){ state=obj.state; render(); save(); alert('Imported!') }
-        else alert('Invalid file.')
-      }catch{ alert('Invalid JSON') }
-    }
-    reader.readAsText(f)
-  })
+  on('#start-rest','click', ()=> startRest(averageRestSec()))
+  on('#stop-rest','click', ()=> stopRest())
+  on('#add-30','click', ()=>{ if(restInterval){ restLeft+=30 } else { startRest(30) } })
 
   // =============================
-  // Theme toggle
-  // =============================
-  let light=false
-  qs('#toggle-theme').addEventListener('click', ()=>{
-    light = !light
-    document.documentElement.style.setProperty('--bg', light?'#f7f8fb':'#0b0d10')
-    document.documentElement.style.setProperty('--card', light?'#ffffff':'#12151a')
-    document.documentElement.style.setProperty('--muted', light?'#e9edf5':'#20252d')
-    document.documentElement.style.setProperty('--ink', light?'#0b0d10':'#e6e9ef')
-    document.documentElement.style.setProperty('--ink-dim', light?'#3b4350':'#aeb7c6')
-  })
-
-  // =============================
-  // Boot
+  // Boot — show landing; autohide header when scrolled
   // =============================
   (function boot(){
-    const sel = qs('#session-select')
-    const initial = localStorage.getItem('iron-tempo::last-session') || 'push'
-    const has = load(initial)
-    if(!has) initSession(initial); else render()
-    sel.value = state.session
-    // remember selected session
-    sel.addEventListener('change', ()=>localStorage.setItem('iron-tempo::last-session', sel.value))
-  })()
-  // Autohide top bar when not at top
-  window.addEventListener('load', ()=>{
+    showLanding()
     const toggleTop = ()=>{
       const show = window.scrollY <= 2
       qsa('.autohide').forEach(el=> el.style.display = show? '' : 'none')
     }
     toggleTop()
     window.addEventListener('scroll', toggleTop, {passive:true})
-  })
+  })()
   </script>
 </body>
 </html>
