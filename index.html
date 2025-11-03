@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#0b0d10" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%230b0d10'/%3E%3Cpath d='M10 34h44v-4H10v4zm6-10h8v16h-8V24zm24 0h8v16h-8V24z' fill='%236FE3A1'/%3E%3C/svg%3E" />
   <style>
     :root{
       --bg:#0b0d10;          /* charcoal */
@@ -195,43 +196,58 @@
   // =============================
   const TEMPLATES = {
     push: [
-      { name:"Barbell Bench Press", sets:5, reps:"5", rest:120, img:"https://placehold.co/640x360?text=Bench+Press" },
-      { name:"Overhead Press", sets:4, reps:"8", rest:90, img:"https://placehold.co/640x360?text=Overhead+Press" },
-      { name:"Incline DB Press", sets:3, reps:"10", rest:75, img:"https://placehold.co/640x360?text=Incline+DB+Press" },
-      { name:"Chest Fly (DB/Machine)", sets:3, reps:"12", rest:60, img:"https://placehold.co/640x360?text=Chest+Fly" },
-      { name:"EZ Skull Crushers", sets:3, reps:"10", rest:60, img:"https://placehold.co/640x360?text=Skull+Crushers" },
+        { name:"Barbell Bench Press", sets:5, reps:"5", rest:120, img:"assets/bench-press.gif" },
+        { name:"Overhead Shoulder Press", sets:4, reps:"8", rest:90, img:"assets/dumbbell-shoulder-press.gif" },
+        { name:"Incline DB Press", sets:3, reps:"10", rest:75, img:"assets/incline-db-press.gif" },
+        { name:"Chest Fly (DB/Machine)", sets:3, reps:"12", rest:60, img:"assets/chest-fly-dumbells.gif" },
+        { name:"Triceps Dips (weighted if possible)", sets:3, reps:"max", rest:90, img:"assets/tricep-dips.gif" },
+        { name:"EZ Bar Skull Crushers", sets:3, reps:"10", rest:60, img:"assets/skull-crushers.gif" },
+        { name:"Finisher — Push-ups", sets:3, reps:"15 (or failure)", rest:60, img:"assets/push-up.gif" },
+        { name:"Finisher — Overhead Press (Light)", sets:3, reps:"10", rest:60, img:"assets/overhead-press.gif" },
     ],
+
     pull: [
-      { name:"Deadlift", sets:5, reps:"5", rest:150, img:"https://placehold.co/640x360?text=Deadlift" },
-      { name:"Lat Pulldown", sets:4, reps:"10", rest:90, img:"https://placehold.co/640x360?text=Lat+Pulldown" },
-      { name:"Barbell Row", sets:4, reps:"8", rest:90, img:"https://placehold.co/640x360?text=Barbell+Row" },
-      { name:"Seated Row (Machine)", sets:3, reps:"10", rest:75, img:"https://placehold.co/640x360?text=Seated+Row" },
-      { name:"EZ Bar Curl", sets:4, reps:"10", rest:60, img:"https://placehold.co/640x360?text=EZ+Curl" },
+        { name:"Deadlift", sets:5, reps:"5", rest:150, img:"assets/barbell-deadlift.webp" },
+        { name:"Lat Pulldown (wide grip)", sets:4, reps:"8–12", rest:90, img:"assets/lat-pulldown.gif" },
+        { name:"Barbell Bent-Over Row", sets:4, reps:"8", rest:90, img:"assets/barbell-row.gif" },
+        { name:"Seated Row (Machine)", sets:3, reps:"10", rest:75, img:"assets/seated-row-machine.gif" },
+        { name:"EZ Bar Curl", sets:4, reps:"10", rest:60, img:"assets/ez-bar-curl.gif" },
+        { name:"Incline DB Curl (slow negatives)", sets:3, reps:"12", rest:60, img:"assets/incline-db-curl.gif" },
+        { name:"Face Pulls / Rear Delt Fly", sets:3, reps:"15", rest:45, img:"assets/face-pull.gif" },
+        { name:"Finisher — Biceps 21s", sets:1, reps:"21s protocol", rest:60, img:"assets/biceps-21s.gif" },
     ],
+
     legs: [
-      { name:"Back Squat", sets:5, reps:"5", rest:150, img:"https://placehold.co/640x360?text=Back+Squat" },
-      { name:"Romanian Deadlift", sets:4, reps:"8", rest:120, img:"https://placehold.co/640x360?text=RDL" },
-      { name:"Walking Lunges", sets:3, reps:"12/leg", rest:90, img:"https://placehold.co/640x360?text=Walking+Lunge" },
-      { name:"Leg Press / Machine Squat", sets:3, reps:"10", rest:90, img:"https://placehold.co/640x360?text=Leg+Press" },
-      { name:"Hanging Leg Raise", sets:3, reps:"15", rest:45, img:"https://placehold.co/640x360?text=Leg+Raise" },
+        { name:"Back Squat", sets:5, reps:"5", rest:150, img:"assets/back-squat.gif" },
+        { name:"Romanian Deadlift", sets:4, reps:"8", rest:120, img:"assets/romanian-deadlift.gif" },
+        { name:"Walking Lunges", sets:3, reps:"12/leg", rest:90, img:"assets/walking-lunge.gif" },
+        { name:"Leg Press / Machine Squat", sets:3, reps:"10", rest:90, img:"assets/leg-press.gif" },
+        { name:"Weighted Hanging Leg Raise", sets:3, reps:"15", rest:45, img:"assets/hanging-leg-raise.gif" },
+        { name:"Plank Variations", sets:3, reps:"60s hold", rest:45, img:"assets/plank-variations.gif" },
+        { name:"Finisher — Bodyweight Squat Dropset", sets:3, reps:"AMRAP (no rest)", rest:0, img:"assets/bodyweight-squat.gif" },
     ],
+
     power: [
-      { name:"Front Squat", sets:4, reps:"6", rest:120, img:"https://placehold.co/640x360?text=Front+Squat" },
-      { name:"Clean & Press", sets:4, reps:"6", rest:120, img:"https://placehold.co/640x360?text=Clean+%26+Press" },
-      { name:"DB Snatch (Alt)", sets:3, reps:"8/side", rest:75, img:"https://placehold.co/640x360?text=DB+Snatch" },
-      { name:"Farmer's Carry", sets:4, reps:"40m", rest:60, img:"https://placehold.co/640x360?text=Farmer's+Carry" },
-      { name:"Burpees + Jump Squats", sets:3, reps:"20+20", rest:60, img:"https://placehold.co/640x360?text=Burpees+%2B+Jumps" },
+        { name:"Front Squat", sets:4, reps:"6", rest:120, img:"assets/front-squat.gif" },
+        { name:"Clean & Press", sets:4, reps:"6", rest:120, img:"assets/clean-and-press.gif" },
+        { name:"DB Snatch (alternating)", sets:3, reps:"8/side", rest:75, img:"assets/db-snatch.gif" },
+        { name:"Farmer's Carry", sets:4, reps:"40m", rest:60, img:"assets/farmers-carry.gif" },
+        { name:"Burpees + Jump Squats", sets:3, reps:"20+20", rest:60, img:"assets/burpees-jump-squats.gif" },
+        { name:"Plank→Push-up + Mountain Climbers", sets:3, reps:"circuit", rest:60, img:"assets/plank-to-pushup-mountain-climbers.gif" },
+        { name:"Finisher — 10-min AMRAP (PU/DL/Rows/JS)", sets:1, reps:"10-min AMRAP (10/10/10/10)", rest:0, img:"assets/amrap-circuit.gif" },
     ],
+
     custom: [
-      { name:"Custom Exercise", sets:3, reps:"10", rest:90, img:"https://placehold.co/640x360?text=Custom+Exercise" }
+        { name:"Custom Exercise", sets:3, reps:"10", rest:90, img:"assets/custom-exercise.gif" }
     ]
-  }
+}
+
 
   // =============================
   // Helpers
   // =============================
-  const $ = s => document.querySelector(s)
-  const $$ = s => Array.from(document.querySelectorAll(s))
+  const qs = (s) => document.querySelector(s)
+  const qsa = (s) => Array.from(document.querySelectorAll(s))
 
   const pad = (n) => String(n).padStart(2,'0')
   const fmtTime = (sec) => `${pad(Math.floor(sec/60))}:${pad(sec%60)}`
@@ -282,15 +298,15 @@
       `Sets: ${doneSets}/${totalSets}`,
       `Started: ${new Date(state.startedAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`
     ]
-    $('#session-meta').innerHTML = meta.map(x=>`<span class="meta-pill">${x}</span>`).join('')
+    qs('#session-meta').innerHTML = meta.map(x=>`<span class="meta-pill">${x}</span>`).join('')
 
-    $('#default-rest').textContent = averageRestSec()
+    qs('#default-rest').textContent = averageRestSec()
 
-    const container = $('#cards')
+    const container = qs('#cards')
     container.innerHTML = ''
 
     state.ex.forEach((e,idx)=>{
-      const tpl = document.importNode($('#card-tpl').content, true)
+      const tpl = document.importNode(qs('#card-tpl').content, true)
       const card = tpl.querySelector('.card')
       card.dataset.ex = idx
       tpl.querySelector('.ex-name').textContent = e.name
@@ -359,7 +375,7 @@
     // if a set marked done, start rest matching this exercise
     if(e.done[setIdx] && startRestToo){
       startRest(e.rest)
-      try{ const pills = $$(`article.card[data-ex="${exIdx}"] .set-pill`) ; pills[setIdx]?.scrollIntoView({behavior:'smooth', block:'center'}) }catch{}
+      try{ const pills = qsa(`article.card[data-ex="${exIdx}"] .set-pill`) ; pills[setIdx]?.scrollIntoView({behavior:'smooth', block:'center'}) }catch{}
     }
   }
 
@@ -374,25 +390,25 @@
     stopRest()
     restLeft = sec
     restTotal = sec
-    $('#rest-progress').style.width = '0%'
-    $('#rest-time').textContent = fmtTime(restLeft)
+    qs('#rest-progress').style.width = '0%'
+    qs('#rest-time').textContent = fmtTime(restLeft)
     restInterval = setInterval(()=>{
       restLeft--
       if(restLeft <= 0){
-        $('#rest-time').textContent = 'GO!'
-        $('#rest-progress').style.width = '100%'
+        qs('#rest-time').textContent = 'GO!'
+        qs('#rest-progress').style.width = '100%'
         beep(); vibrate(300)
         stopRest(true)
       } else {
-        $('#rest-time').textContent = fmtTime(restLeft)
+        qs('#rest-time').textContent = fmtTime(restLeft)
         const p = 100 * (1 - restLeft / restTotal)
-        $('#rest-progress').style.width = p.toFixed(1) + '%'
+        qs('#rest-progress').style.width = p.toFixed(1) + '%'
       }
     }, 1000)
   }
   function stopRest(keepLabel=false){
     if(restInterval){ clearInterval(restInterval); restInterval=null }
-    if(!keepLabel){ $('#rest-time').textContent = '—' ; $('#rest-progress').style.width='0%'}
+    if(!keepLabel){ qs('#rest-time').textContent = '—' ; qs('#rest-progress').style.width='0%'}
   }
 
   function beep(){
@@ -442,8 +458,8 @@
     }).join('')
 
     lines.push(`<ul style="margin:8px 0 0 18px">${exTable}</ul>`)
-    $('#summary-body').innerHTML = lines.join('')
-    $('#summary').showModal()
+    qs('#summary-body').innerHTML = lines.join('')
+    qs('#summary').showModal()
   }
 
   function escapeHtml(s){
@@ -455,38 +471,38 @@
   // =============================
   setInterval(()=>{
     const d=new Date();
-    $('#clock-now').textContent = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+    qs('#clock-now').textContent = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
     const secs = Math.max(0, Math.floor((Date.now()-state.startedAt)/1000))
-    $('#elapsed').textContent = fmtHMS(secs)
+    qs('#elapsed').textContent = fmtHMS(secs)
   }, 1000)
 
   // =============================
   // Events
   // =============================
-  $('#session-select').addEventListener('change', (e)=>{
+  qs('#session-select').addEventListener('change', (e)=>{
     const val = e.target.value
     // Try to load today's existing session; otherwise init
     if(!load(val)) initSession(val); else { state.session=val; render(); save() }
   })
-  $('#new-workout').addEventListener('click', ()=>{
+  qs('#new-workout').addEventListener('click', ()=>{
     if(confirm('Start a fresh workout for this session? This resets today\'s progress.')){
       initSession(state.session)
     }
   })
-  $('#finish').addEventListener('click', showSummary)
-  $('#close-summary').addEventListener('click', ()=>$('#summary').close())
+  qs('#finish').addEventListener('click', showSummary)
+  qs('#close-summary').addEventListener('click', ()=>qs('#summary').close())
 
-  $('#toggle-notes').addEventListener('click', ()=>{
-    $('#notes').classList.toggle('hidden')
-    $('#workout-note').focus()
+  qs('#toggle-notes').addEventListener('click', ()=>{
+    qs('#notes').classList.toggle('hidden')
+    qs('#workout-note').focus()
   })
-  $('#workout-note').addEventListener('change', (e)=>{ state.note = e.target.value; save() })
+  qs('#workout-note').addEventListener('change', (e)=>{ state.note = e.target.value; save() })
 
-  $('#start-rest').addEventListener('click', ()=>startRest(averageRestSec()))
-  $('#stop-rest').addEventListener('click', ()=>stopRest())
-  $('#add-30').addEventListener('click', ()=>{ if(restInterval){ restLeft+=30 } else { startRest(30) } })
+  qs('#start-rest').addEventListener('click', ()=>startRest(averageRestSec()))
+  qs('#stop-rest').addEventListener('click', ()=>stopRest())
+  qs('#add-30').addEventListener('click', ()=>{ if(restInterval){ restLeft+=30 } else { startRest(30) } })
 
-  $('#export').addEventListener('click', ()=>{
+  qs('#export').addEventListener('click', ()=>{
     const dump = { date: todayKey(), session: state.session, state }
     const blob = new Blob([JSON.stringify(dump,null,2)], {type:'application/json'})
     const url = URL.createObjectURL(blob)
@@ -494,8 +510,8 @@
     a.href = url; a.download = `iron-tempo_${todayKey()}_${state.session}.json`
     a.click(); URL.revokeObjectURL(url)
   })
-  $('#import').addEventListener('click', ()=>$('#import-file').click())
-  $('#import-file').addEventListener('change', (ev)=>{
+  qs('#import').addEventListener('click', ()=>qs('#import-file').click())
+  qs('#import-file').addEventListener('change', (ev)=>{
     const f = ev.target.files?.[0]; if(!f) return
     const reader = new FileReader()
     reader.onload = ()=>{
@@ -511,7 +527,7 @@
   // Theme toggle
   // =============================
   let light=false
-  $('#toggle-theme').addEventListener('click', ()=>{
+  qs('#toggle-theme').addEventListener('click', ()=>{
     light = !light
     document.documentElement.style.setProperty('--bg', light?'#f7f8fb':'#0b0d10')
     document.documentElement.style.setProperty('--card', light?'#ffffff':'#12151a')
@@ -524,7 +540,7 @@
   // Boot
   // =============================
   (function boot(){
-    const sel = $('#session-select')
+    const sel = qs('#session-select')
     const initial = localStorage.getItem('iron-tempo::last-session') || 'push'
     const has = load(initial)
     if(!has) initSession(initial); else render()
