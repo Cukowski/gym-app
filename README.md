@@ -1,6 +1,8 @@
 # gym-app
 mobile-friendly gym app
 
+[https://cukowski.github.io/gym-app/](https://cukowski.github.io/gym-app/)
+
 - Session presets (Push / Pull / Legs / Power / Custom)
 
 - Tap-to-complete sets on each exercise card (image acts as a big button)
