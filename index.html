@@ -212,6 +212,10 @@
   // =============================
   const TEMPLATES = {
     push: [
+      // Warm-up
+      { name:"Dynamic Warm-up", sets:1, reps:"5 min", rest:0, img:"assets/dynamic-warmup.gif" },
+
+      // Main work
       { name:"Barbell Bench Press", sets:5, reps:"5", rest:120, img:"assets/bench-press.gif" },
       { name:"Overhead Shoulder Press", sets:4, reps:"8", rest:90, img:"assets/dumbbell-shoulder-press.gif" },
       { name:"Incline DB Press", sets:3, reps:"10", rest:75, img:"assets/incline-db-press.gif" },
@@ -220,8 +224,14 @@
       { name:"EZ Bar Skull Crushers", sets:3, reps:"10", rest:60, img:"assets/skull-crushers.gif" },
       { name:"Finisher — Push-ups", sets:3, reps:"15 (or failure)", rest:60, img:"assets/push-up.gif" },
       { name:"Finisher — Overhead Press (Light)", sets:3, reps:"10", rest:60, img:"assets/overhead-press.gif" },
+
+      // Cool-down
+      { name:"Post-Workout Stretch", sets:1, reps:"10 min", rest:0, img:"assets/stretching-cooldown.gif" },
     ],
+
     pull: [
+      { name:"Dynamic Warm-up", sets:1, reps:"5 min", rest:0, img:"assets/dynamic-warmup.gif" },
+
       { name:"Deadlift", sets:5, reps:"5", rest:150, img:"assets/barbell-deadlift.webp" },
       { name:"Lat Pulldown (wide grip)", sets:4, reps:"8–12", rest:90, img:"assets/lat-pulldown.gif" },
       { name:"Barbell Bent-Over Row", sets:4, reps:"8", rest:90, img:"assets/barbell-row.gif" },
@@ -230,8 +240,13 @@
       { name:"Incline DB Curl (slow negatives)", sets:3, reps:"12", rest:60, img:"assets/incline-db-curl.gif" },
       { name:"Face Pulls / Rear Delt Fly", sets:3, reps:"15", rest:45, img:"assets/face-pull.gif" },
       { name:"Finisher — Biceps 21s", sets:1, reps:"21s protocol", rest:60, img:"assets/biceps-21s.gif" },
+
+      { name:"Post-Workout Stretch", sets:1, reps:"10 min", rest:0, img:"assets/stretching-cooldown.gif" },
     ],
+
     legs: [
+      { name:"Dynamic Warm-up", sets:1, reps:"5 min", rest:0, img:"assets/dynamic-warmup.gif" },
+
       { name:"Back Squat", sets:5, reps:"5", rest:150, img:"assets/back-squat.gif" },
       { name:"Romanian Deadlift", sets:4, reps:"8", rest:120, img:"assets/romanian-deadlift.gif" },
       { name:"Walking Lunges", sets:3, reps:"12/leg", rest:90, img:"assets/walking-lunge.gif" },
@@ -239,8 +254,13 @@
       { name:"Weighted Hanging Leg Raise", sets:3, reps:"15", rest:45, img:"assets/hanging-leg-raise.gif" },
       { name:"Plank Variations", sets:3, reps:"60s hold", rest:45, img:"assets/plank-variations.gif" },
       { name:"Finisher — Bodyweight Squat Dropset", sets:3, reps:"AMRAP (no rest)", rest:0, img:"assets/bodyweight-squat.gif" },
+
+      { name:"Post-Workout Stretch", sets:1, reps:"10 min", rest:0, img:"assets/stretching-cooldown.gif" },
     ],
+
     power: [
+      { name:"Dynamic Warm-up", sets:1, reps:"5 min", rest:0, img:"assets/dynamic-warmup.gif" },
+
       { name:"Front Squat", sets:4, reps:"6", rest:120, img:"assets/front-squat.gif" },
       { name:"Clean & Press", sets:4, reps:"6", rest:120, img:"assets/clean-and-press.gif" },
       { name:"DB Snatch (alternating)", sets:3, reps:"8/side", rest:75, img:"assets/db-snatch.gif" },
@@ -248,11 +268,17 @@
       { name:"Burpees + Jump Squats", sets:3, reps:"20+20", rest:60, img:"assets/burpees-jump-squats.gif" },
       { name:"Plank→Push-up + Mountain Climbers", sets:3, reps:"circuit", rest:60, img:"assets/plank-to-pushup-mountain-climbers.gif" },
       { name:"Finisher — 10-min AMRAP (PU/DL/Rows/JS)", sets:1, reps:"10-min AMRAP (10/10/10/10)", rest:0, img:"assets/amrap-circuit.gif" },
+
+      { name:"Post-Workout Stretch", sets:1, reps:"10 min", rest:0, img:"assets/stretching-cooldown.gif" },
     ],
+
     custom: [
-      { name:"Custom Exercise", sets:3, reps:"10", rest:90, img:"assets/custom-exercise.gif" }
+      { name:"Dynamic Warm-up", sets:1, reps:"5 min", rest:0, img:"assets/dynamic-warmup.gif" },
+      { name:"Custom Exercise", sets:3, reps:"10", rest:90, img:"assets/custom-exercise.gif" },
+      { name:"Post-Workout Stretch", sets:1, reps:"10 min", rest:0, img:"assets/stretching-cooldown.gif" },
     ]
   }
+
 
   // =============================
   // Helpers (guarded bindings)
