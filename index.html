@@ -212,6 +212,11 @@
     .hint{font-size:12px;color:var(--dim);line-height:1.45}
     .danger-text{color:#ffb4b4}
     .ok-text{color:#bff2cf}
+    .memory{font-size:11px;color:var(--dim);line-height:1.35;margin-top:-2px}
+    .memory strong{color:var(--ink)}
+    .status{font-size:12px;color:var(--dim);padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:#0c1317}
+    .status.ok{color:#bff2cf;border-color:rgba(111,227,161,.22);background:rgba(111,227,161,.08)}
+    .status.bad{color:#ffb4b4;border-color:rgba(255,100,100,.25);background:rgba(255,100,100,.08)}
     .hidden{display:none!important}
   </style>
 </head>
@@ -283,7 +288,7 @@
     <section id="screen-history" class="screen">
       <div class="hero">
         <h1>Progress</h1>
-        <p>Local progress is stored on this phone/browser. Optional Google Sheets sync can append backups when you finish sessions.</p>
+        <p>Progress is stored locally first, then can be pulled from Google Sheets so your phone and laptop see the same workout history, last weights, notes and PRs.</p>
       </div>
       <div class="stats">
         <div class="stat"><div class="num" id="statWorkouts">0</div><div class="lab">strength sessions</div></div>
@@ -304,12 +309,26 @@
           </table>
         </div>
       </div>
+
+      <div class="card" style="margin-top:10px">
+        <div class="row" style="margin-bottom:10px">
+          <h2>Exercise memory</h2>
+          <button class="secondary small" id="pullCloudBtnTop">Pull Sheets</button>
+        </div>
+        <p class="hint" style="margin-bottom:8px">Last used weight and load PR are calculated from saved strength records. This is the part that helps tomorrow-you remember what today-you lifted.</p>
+        <div style="overflow:auto">
+          <table>
+            <thead><tr><th>Exercise</th><th>Last</th><th>PR</th><th>Last note</th></tr></thead>
+            <tbody id="exerciseMemoryRows"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <section id="screen-settings" class="screen">
       <div class="hero">
         <h1>Database / sync</h1>
-        <p>For GitHub Pages the cleanest “small database” is: localStorage first, then optional Google Sheets via Apps Script as an append-only cloud backup.</p>
+        <p>For GitHub Pages the cleanest small database is: localStorage for offline use, Google Sheets for cross-device history. Pull from Sheets on every device to see the same workouts, notes, last weights and PRs.</p>
       </div>
 
       <div class="grid two">
@@ -318,10 +337,15 @@
           <div class="form-grid">
             <input id="appsScriptUrl" placeholder="Paste Apps Script Web App URL here" />
             <label class="pill" style="justify-content:flex-start">
-              <input id="cloudSync" type="checkbox" style="width:auto"> Enable cloud append on finish
+              <input id="cloudSync" type="checkbox" style="width:auto"> Push finished sessions to Sheets
+            </label>
+            <label class="pill" style="justify-content:flex-start">
+              <input id="cloudPullOnLaunch" type="checkbox" style="width:auto"> Pull Sheets on launch
             </label>
             <button id="saveSettingsBtn">Save settings</button>
-            <p class="hint">The app still works offline. Cloud sync is fire-and-forget because Google Apps Script does not behave like a normal CORS API from static GitHub Pages.</p>
+            <button class="secondary" id="pullCloudBtn">Pull from Google Sheets now</button>
+            <div class="status" id="cloudStatus">Cloud status: not checked yet.</div>
+            <p class="hint">Push saves new finished sessions to the sheet. Pull reads the sheet back into this browser. Use the same Apps Script URL on phone and laptop.</p>
           </div>
         </div>
 
@@ -375,6 +399,7 @@
         <input class="weight" type="number" inputmode="decimal" placeholder="kg">
         <input class="note" type="text" placeholder="note / RPE">
       </div>
+      <div class="memory"></div>
       <div class="summary-row">
         <span class="volume">Volume: 0 kg</span>
         <button class="secondary small reset">Reset</button>
@@ -550,7 +575,7 @@
     const store = {
       get records(){ return JSON.parse(localStorage.getItem('it_records_v3') || '[]'); },
       set records(v){ localStorage.setItem('it_records_v3', JSON.stringify(v)); },
-      get settings(){ return JSON.parse(localStorage.getItem('it_settings_v3') || '{"appsScriptUrl":"","cloudSync":false}'); },
+      get settings(){ return JSON.parse(localStorage.getItem('it_settings_v3') || '{"appsScriptUrl":"","cloudSync":false,"cloudPullOnLaunch":true}'); },
       set settings(v){ localStorage.setItem('it_settings_v3', JSON.stringify(v)); },
       get active(){ return JSON.parse(localStorage.getItem('it_active_v3') || 'null'); },
       set active(v){ v ? localStorage.setItem('it_active_v3', JSON.stringify(v)) : localStorage.removeItem('it_active_v3'); }
@@ -650,8 +675,11 @@
 
         const weight = $('.weight', node);
         const note = $('.note', node);
+        const mem = exerciseMemory(e.name);
         weight.value = e.weight || '';
         note.value = e.note || '';
+        if(!e.weight && mem.lastWeight) weight.placeholder = `Last ${mem.lastWeight} kg • PR ${mem.prWeight || mem.lastWeight} kg`;
+        $('.memory', node).innerHTML = memoryLine(mem);
         listen(weight,'change',()=>{ e.weight = weight.value; saveActive(); updateExerciseVolume(card,e); });
         listen(note,'change',()=>{ e.note = note.value; saveActive(); });
 
@@ -813,15 +841,14 @@
     }
 
     function addRecord(record){
-      const records = store.records;
-      records.unshift(record);
-      store.records = records.slice(0,500);
+      mergeRecords([record]);
       syncCloud(record);
     }
 
     function syncCloud(record){
       const settings = store.settings;
       if(!settings.cloudSync || !settings.appsScriptUrl) return;
+      setCloudStatus('Pushing record to Sheets…');
       try{
         fetch(settings.appsScriptUrl, {
           method:'POST',
@@ -829,7 +856,93 @@
           headers:{'Content-Type':'text/plain;charset=utf-8'},
           body:JSON.stringify(record)
         });
-      }catch(err){ console.warn('Cloud sync failed', err); }
+        setCloudStatus('Record sent to Sheets. Pull on other devices to see it there.', 'ok');
+      }catch(err){
+        console.warn('Cloud sync failed', err);
+        setCloudStatus('Cloud push failed. Local copy is still saved.', 'bad');
+      }
+    }
+
+    function mergeRecords(incoming){
+      const map = new Map();
+      [...incoming, ...store.records].forEach(r=>{
+        if(!r || !r.id) return;
+        map.set(String(r.id), normalizeRecord(r));
+      });
+      const merged = Array.from(map.values()).sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()).slice(0,1000);
+      store.records = merged;
+      return merged;
+    }
+
+    function normalizeRecord(r){
+      return {
+        id:String(r.id || uid()),
+        date:r.date || new Date().toISOString(),
+        type:r.type || '',
+        title:r.title || '',
+        durationMin:number(r.durationMin),
+        distanceKm:number(r.distanceKm),
+        volumeKg:number(r.volumeKg),
+        doneSets:number(r.doneSets),
+        totalSets:number(r.totalSets),
+        intensity:r.intensity || '',
+        strava:r.strava || '',
+        notes:r.notes || '',
+        details:Array.isArray(r.details) ? r.details : []
+      };
+    }
+
+    function jsonp(url, params={}, timeoutMs=15000){
+      return new Promise((resolve,reject)=>{
+        const cb = `__ironTempoCb_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+        const script = document.createElement('script');
+        const timer = setTimeout(()=>{
+          cleanup();
+          reject(new Error('Cloud pull timed out'));
+        }, timeoutMs);
+        function cleanup(){
+          clearTimeout(timer);
+          delete window[cb];
+          script.remove();
+        }
+        window[cb] = data => { cleanup(); resolve(data); };
+        const u = new URL(url);
+        Object.entries({...params, callback:cb}).forEach(([k,v])=>u.searchParams.set(k,v));
+        script.onerror = () => { cleanup(); reject(new Error('Cloud pull failed')); };
+        script.src = u.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    async function pullCloud(silent=false){
+      const settings = store.settings;
+      if(!settings.appsScriptUrl){
+        if(!silent) alert('Paste your Apps Script Web App URL in Settings first.');
+        return;
+      }
+      setCloudStatus('Pulling records from Google Sheets…');
+      try{
+        const data = await jsonp(settings.appsScriptUrl, {action:'list'});
+        if(!data || !data.ok) throw new Error(data?.error || 'Unknown cloud response');
+        const before = store.records.length;
+        mergeRecords(data.records || []);
+        const after = store.records.length;
+        renderHistory();
+        if(state) renderWorkout();
+        setCloudStatus(`Pulled ${data.records?.length || 0} rows from Sheets. Local records: ${before} → ${after}.`, 'ok');
+      }catch(err){
+        console.warn(err);
+        setCloudStatus(`Cloud pull failed: ${err.message}. Check deployment permissions/version.`, 'bad');
+        if(!silent) alert(`Cloud pull failed: ${err.message}`);
+      }
+    }
+
+    function setCloudStatus(text, kind=''){
+      const el = $('#cloudStatus');
+      if(!el) return;
+      el.textContent = `Cloud status: ${text}`;
+      el.classList.toggle('ok', kind==='ok');
+      el.classList.toggle('bad', kind==='bad');
     }
 
     function renderHistory(){
@@ -850,7 +963,61 @@
           ? `${r.durationMin} min • ${r.doneSets}/${r.totalSets} sets • ${r.volumeKg?.toLocaleString()||0} kg`
           : `${r.durationMin} min${r.distanceKm?` • ${r.distanceKm} km`:''} • ${r.intensity||''}${r.strava?` • Strava`:''}`;
         return `<tr><td>${date}</td><td>${escapeHtml(r.title)}</td><td>${escapeHtml(summary)}</td><td>${escapeHtml(r.notes||'')}</td></tr>`;
-      }).join('') || `<tr><td colspan="4" class="hint">No records yet. The log is waiting quietly.</td></tr>`;
+      }).join('') || `<tr><td colspan="4" class="hint">No records yet. Pull from Sheets or finish a session.</td></tr>`;
+
+      renderExerciseMemory();
+    }
+
+    function renderExerciseMemory(){
+      const rows = $('#exerciseMemoryRows');
+      if(!rows) return;
+      const names = Object.values(WORKOUTS).flatMap(w=>w.exercises.map(e=>e.name));
+      const uniqueNames = Array.from(new Set(names)).filter(n=>!/(warm-up|stretch)/i.test(n));
+      rows.innerHTML = uniqueNames.map(name=>{
+        const m = exerciseMemory(name);
+        if(!m.lastWeight && !m.prWeight) return '';
+        return `<tr><td>${escapeHtml(name)}</td><td>${m.lastWeight ? `${escapeHtml(m.lastWeight)} kg<br><span class="hint">${escapeHtml(m.lastDate || '')}</span>` : '-'}</td><td>${m.prWeight ? `${escapeHtml(m.prWeight)} kg` : '-'}</td><td>${escapeHtml(m.lastNote || '')}</td></tr>`;
+      }).join('') || `<tr><td colspan="4" class="hint">No exercise memory yet. Finish a strength session, then this becomes your iron notebook.</td></tr>`;
+    }
+
+    function exerciseMemory(exerciseName){
+      const key = normalizeExerciseName(exerciseName);
+      let last = null;
+      let pr = null;
+      store.records
+        .filter(r=>r.type==='strength')
+        .sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime())
+        .forEach(r=>{
+          (r.details || []).forEach(d=>{
+            if(normalizeExerciseName(d.name) !== key) return;
+            const weight = number(d.weight);
+            if(!weight) return;
+            if(!last) last = {weight, note:d.note || '', date:r.date};
+            if(!pr || weight > pr.weight) pr = {weight, date:r.date};
+          });
+        });
+      return {
+        lastWeight:last ? cleanNum(last.weight) : '',
+        lastNote:last ? last.note : '',
+        lastDate:last ? new Date(last.date).toLocaleDateString([], {month:'short',day:'2-digit'}) : '',
+        prWeight:pr ? cleanNum(pr.weight) : ''
+      };
+    }
+
+    function memoryLine(mem){
+      if(!mem.lastWeight && !mem.prWeight) return '<span class="hint">No previous load saved for this exercise yet.</span>';
+      const last = mem.lastWeight ? `<strong>Last:</strong> ${escapeHtml(mem.lastWeight)} kg${mem.lastDate ? ` (${escapeHtml(mem.lastDate)})` : ''}` : '';
+      const pr = mem.prWeight ? `<strong>PR:</strong> ${escapeHtml(mem.prWeight)} kg` : '';
+      const note = mem.lastNote ? `<br><strong>Last note:</strong> ${escapeHtml(mem.lastNote)}` : '';
+      return [last, pr].filter(Boolean).join(' • ') + note;
+    }
+
+    function normalizeExerciseName(name){
+      return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+    }
+
+    function cleanNum(n){
+      return Number.isInteger(n) ? String(n) : String(Math.round(n*10)/10);
     }
 
     function switchScreen(name){
@@ -865,13 +1032,16 @@
       const s = store.settings;
       $('#appsScriptUrl').value = s.appsScriptUrl || '';
       $('#cloudSync').checked = !!s.cloudSync;
+      $('#cloudPullOnLaunch').checked = !!s.cloudPullOnLaunch;
     }
 
     function saveSettings(){
       store.settings = {
         appsScriptUrl:$('#appsScriptUrl').value.trim(),
-        cloudSync:$('#cloudSync').checked
+        cloudSync:$('#cloudSync').checked,
+        cloudPullOnLaunch:$('#cloudPullOnLaunch').checked
       };
+      setCloudStatus('Settings saved.', 'ok');
       alert('Settings saved.');
     }
 
@@ -947,6 +1117,8 @@
       listen('#saveCardioBtn','click',saveCardio);
       listen('#closeSummaryBtn','click',()=>$('#summaryModal').close());
       listen('#saveSettingsBtn','click',saveSettings);
+      listen('#pullCloudBtn','click',()=>pullCloud(false));
+      listen('#pullCloudBtnTop','click',()=>pullCloud(false));
       listen('#exportJsonBtn','click',exportJSON);
       listen('#exportCsvBtn','click',exportCSV);
       listen('#importJsonInput','change',e=>importJSON(e.target.files[0]));
@@ -960,6 +1132,7 @@
       setInterval(()=>{ updateElapsed(); tickRest(); }, 500);
       document.addEventListener('visibilitychange',()=>{ updateElapsed(); tickRest(); });
       updateElapsed();
+      if(store.settings.appsScriptUrl && store.settings.cloudPullOnLaunch) pullCloud(true);
     }
 
     boot();

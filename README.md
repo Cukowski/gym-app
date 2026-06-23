@@ -1,79 +1,66 @@
-# Iron Tempo Tri
+# Iron Tempo Tri — v2 Cloud Sync
 
-A mobile-first gym + triathlon training log for GitHub Pages.
+A mobile-first gym + triathlon companion for GitHub Pages.
 
-## What changed
+## What it tracks
 
-- New triathlon-aware home screen.
-- Strength templates:
-  - Full Body Pump
-  - Upper Body Pump
-  - Lower Body + Core
-  - Push
-  - Pull
-  - Tri Core + Rope
-- Cardio logs:
-  - Run
-  - Bike
-  - Rope Jump
-  - Swim
-- Local progress dashboard.
-- Export JSON / CSV.
-- Optional Google Sheets sync through Apps Script.
-- Timestamp-based timer so the rest countdown does not freeze when switching tabs/apps.
+- Full Body Pump, Upper Body, Lower Body + Core, Push, Pull, Tri Core + Rope
+- Run / Bike / Rope Jump / Swim cardio logs
+- Sets completed
+- Weight used
+- Exercise notes / RPE
+- Total workout volume
+- Last used weight and PR per exercise
+- Google Sheets cross-device sync
 
 ## Files
 
-- `index.html` — upload to the root of your GitHub Pages repo.
-- `Code.gs` — optional Google Apps Script backend for Google Sheets.
+```text
+gym-app/
+├── index.html
+├── Code.gs          # paste into Google Apps Script, not into GitHub Pages
+├── README.md
+└── assets/          # keep your existing exercise GIFs/images
+```
 
-## Assets
+## Google Sheets setup
 
-Keep your existing `assets/` folder. The app uses only the file names you already listed:
+1. Open your Google Sheet.
+2. Go to **Extensions → Apps Script**.
+3. Replace `Code.gs` with the included `Code.gs` file.
+4. Run `setup()` once and approve permissions if needed.
+5. Go to **Deploy → Manage deployments**.
+6. Edit your Web App deployment.
+7. Choose **Version: New version**.
+8. Deploy.
+9. Keep/copy the Web App URL ending in `/exec`.
 
-- `back-squat.gif`
-- `barbell-deadlift.webp`
-- `barbell-row.gif`
-- `bench-press.gif`
-- `biceps-21s.gif`
-- `chest-fly-dumbells.gif`
-- `dumbbell-shoulder-press.gif`
-- `dynamic-warmup.gif`
-- `ez-bar-curl.gif`
-- `face-pull.gif`
-- `incline-db-curl.gif`
-- `incline-db-press.gif`
-- `lat-pulldown.gif`
-- `overhead-press.gif`
-- `push-up.gif`
-- `romanian-deadlift.gif`
-- `seated-row-machine.gif`
-- `skull-crushers.gif`
-- `stretching-cooldown.gif`
-- `tricep-dips.gif`
-- `walking-lunge.gif`
+The URL can stay the same if you update the existing deployment.
 
-If an asset is missing, the app shows a clean fallback tile instead of breaking.
+## App setup
 
-## GitHub Pages
+1. Upload `index.html` to your GitHub Pages repo.
+2. Keep your existing `assets/` folder.
+3. Open the app.
+4. Go to **Settings**.
+5. Paste the Apps Script Web App URL.
+6. Enable:
+   - **Push finished sessions to Sheets**
+   - **Pull Sheets on launch**
+7. Click **Save settings**.
+8. Click **Pull from Google Sheets now**.
 
-1. Replace your old `index.html` with the new one.
-2. Keep the `assets/` folder next to it.
-3. Push to GitHub.
-4. Open your Pages URL on your phone.
-5. Optional: Add it to your home screen.
+Now the laptop and phone can share the same records through Google Sheets.
 
-## Google Sheets sync
+## Important behavior
 
-1. Create a Google Sheet.
-2. Open **Extensions → Apps Script**.
-3. Paste `Code.gs`.
-4. Run `setup()` once.
-5. Deploy as a Web App:
-   - Execute as: **Me**
-   - Who has access: **Anyone**
-6. Copy the Web App URL.
-7. In the app: **Settings → Google Sheets endpoint**.
-8. Paste URL and enable cloud sync.
+- The app saves locally first so it still works offline.
+- Finished workouts/cardio are pushed to Sheets.
+- Other devices must pull from Sheets to see the latest data.
+- The Progress tab includes **Exercise memory** showing last used load and load PR.
 
-The app still stores everything locally first. Sheets sync is an append-only backup.
+## Strava
+
+Apple Watch → Strava remains the clean path for runs and rides.
+This app can store Strava links manually inside cardio records.
+Direct Strava sync would need a backend/OAuth token flow and is intentionally not included in this static GitHub Pages version.
