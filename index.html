@@ -171,6 +171,8 @@
     .inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .inputs.three{grid-template-columns:1fr 1fr 1fr}
     .summary-row{display:flex;justify-content:space-between;gap:10px;align-items:center;color:var(--dim);font-size:12px}
+    .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .row h2{margin-bottom:0}
     .section-label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;font-weight:900;color:var(--dim2);margin:16px 2px 8px}
     .footer{
       position:fixed;left:0;right:0;bottom:0;z-index:30;
@@ -299,7 +301,33 @@
         <div class="stat"><div class="num" id="statStreak">0</div><div class="lab">active days / 14</div></div>
       </div>
 
-      <div class="card">
+      <div class="card" style="margin-top:10px">
+        <div class="row" style="margin-bottom:10px">
+          <h2>Exercise memory</h2>
+          <button class="secondary small" id="pullCloudBtnTop">Pull Sheets</button>
+        </div>
+
+        <p class="hint" style="margin-bottom:8px">
+          Last used weight and load PR are calculated from saved strength records.
+          This is the part that helps tomorrow-you remember what today-you lifted.
+        </p>
+
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Exercise</th>
+                <th>Last</th>
+                <th>PR</th>
+                <th>Last note</th>
+              </tr>
+            </thead>
+            <tbody id="exerciseMemoryRows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:10px">
         <div class="row" style="margin-bottom:10px">
           <h2>Recent records</h2>
           <button class="secondary small" id="clearHistoryBtn">Clear</button>
@@ -888,6 +916,112 @@
       }catch(err){ console.warn('Cloud sync failed', err); }
     }
 
+    function renderExerciseMemory(){
+      const rows = $('#exerciseMemoryRows');
+      if(!rows) return;
+
+      const memory = new Map();
+      const strength = store.records
+        .filter(r=>r.type==='strength' && Array.isArray(r.details))
+        .sort((a,b)=>new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      strength.forEach(record=>{
+        record.details.forEach(detail=>{
+          const name = String(detail.name || '').trim();
+          if(!name) return;
+
+          const setsDone = number(detail.setsDone);
+          const weight = number(detail.weight);
+          const note = String(detail.note || '').trim();
+          if(!setsDone && !weight && !note) return;
+
+          if(!memory.has(name)){
+            memory.set(name, {name, last:'', pr:0, note:'', date:record.date});
+          }
+
+          const item = memory.get(name);
+          if(!item.last && weight) item.last = weight;
+          if(weight > item.pr) item.pr = weight;
+          if(!item.note && note) item.note = note;
+        });
+      });
+
+      const entries = Array.from(memory.values()).sort((a,b)=>new Date(b.date).getTime() - new Date(a.date).getTime());
+      rows.innerHTML = entries.map(item=>`
+        <tr>
+          <td>${escapeHtml(item.name)}</td>
+          <td>${item.last ? `${escapeHtml(item.last)} kg` : '-'}</td>
+          <td>${item.pr ? `${escapeHtml(item.pr)} kg` : '-'}</td>
+          <td>${escapeHtml(item.note || '-')}</td>
+        </tr>
+      `).join('') || `<tr><td colspan="4" class="hint">No exercise memory yet. Finish a strength session first.</td></tr>`;
+    }
+
+    function pullFromCloud(){
+      const settings = store.settings;
+      if(!settings.appsScriptUrl){
+        alert('Add the Google Sheets endpoint in Settings first.');
+        return;
+      }
+
+      const button = $('#pullCloudBtnTop');
+      const originalLabel = button?.textContent || 'Pull Sheets';
+      if(button){
+        button.disabled = true;
+        button.textContent = 'Pulling...';
+      }
+
+      const callbackName = `__ironTempoPull${Date.now()}${Math.random().toString(16).slice(2)}`;
+      const sep = settings.appsScriptUrl.includes('?') ? '&' : '?';
+      const script = document.createElement('script');
+      let done = false;
+
+      const cleanup = () => {
+        done = true;
+        delete window[callbackName];
+        script.remove();
+        if(button){
+          button.disabled = false;
+          button.textContent = originalLabel;
+        }
+      };
+
+      const timer = setTimeout(()=>{
+        if(done) return;
+        cleanup();
+        alert('Could not pull Sheets. Check the endpoint deployment and try again.');
+      }, 15000);
+
+      window[callbackName] = payload => {
+        clearTimeout(timer);
+        try{
+          if(!payload?.ok || !Array.isArray(payload.records)) throw new Error(payload?.error || 'Bad response');
+          const byId = new Map(store.records.map(r=>[r.id, r]));
+          payload.records.forEach(record=>{
+            if(record?.id) byId.set(record.id, record);
+          });
+          store.records = Array.from(byId.values())
+            .sort((a,b)=>new Date(b.date).getTime() - new Date(a.date).getTime())
+            .slice(0,500);
+          renderHistory();
+          alert(`Pulled ${payload.records.length} records from Sheets.`);
+        }catch(err){
+          console.warn('Cloud pull failed', err);
+          alert('Sheets pull returned an invalid response.');
+        }finally{
+          cleanup();
+        }
+      };
+
+      script.onerror = () => {
+        clearTimeout(timer);
+        cleanup();
+        alert('Could not load Sheets data. Check the endpoint URL.');
+      };
+      script.src = `${settings.appsScriptUrl}${sep}action=list&callback=${encodeURIComponent(callbackName)}`;
+      document.body.appendChild(script);
+    }
+
     function renderHistory(){
       const records = store.records;
       const strength = records.filter(r=>r.type==='strength');
@@ -898,6 +1032,8 @@
       const since = Date.now() - 14*24*3600*1000;
       const days = new Set(records.filter(r=>new Date(r.date).getTime()>=since).map(r=>r.date.slice(0,10)));
       $('#statStreak').textContent = days.size;
+
+      renderExerciseMemory();
 
       const rows = $('#historyRows');
       rows.innerHTML = records.slice(0,30).map(r=>{
@@ -1013,6 +1149,10 @@
       listen('#exportJsonBtn','click',exportJSON);
       listen('#exportCsvBtn','click',exportCSV);
       listen('#importJsonInput','change',e=>importJSON(e.target.files[0]));
+      const topPullBtn = document.querySelector('#pullCloudBtnTop');
+      if(topPullBtn){
+        topPullBtn.addEventListener('click', pullFromCloud);
+      }
       listen('#clearHistoryBtn','click',()=>{
         if(confirm('Delete local workout/cardio history on this browser?')){
           store.records = [];
