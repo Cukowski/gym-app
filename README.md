@@ -1,6 +1,6 @@
-# Iron Tempo Tri — v2 Cloud Sync
+# Iron Tempo Tri — Pump + Triathlon Log
 
-A mobile-first gym + triathlon companion for GitHub Pages.
+Mobile-first GitHub Pages workout app for a small gym + sprint triathlon preparation.
 
 ## What it tracks
 
@@ -12,6 +12,21 @@ A mobile-first gym + triathlon companion for GitHub Pages.
 - Total workout volume
 - Last used weight and PR per exercise
 - Google Sheets cross-device sync
+
+## What changed in v3
+
+- Footer no longer shows while typing in weight/note fields, preventing accidental workout finish on phones.
+- The misleading manual **Start** rest button was removed.
+- Rest now starts automatically when you tap a completed set.
+- Footer controls are now: **Rest timer**, **+30**, **Skip**, **Finish**.
+- Added a whistle-like Web Audio signal when rest time ends.
+- Timer still uses timestamps, so switching apps/tabs should not freeze it.
+- Weight and notes save on typing, not only after blur/change.
+- Active workouts are saved locally without repeatedly pulling from Google Sheets.
+
+## Important audio limitation
+
+The whistle is implemented with Web Audio and should mix with existing audio instead of intentionally stopping Spotify. Browser and iOS rules may still mute web audio when the phone is in silent mode or if audio permission has not been unlocked by a user gesture.
 
 ## Files
 
