@@ -171,6 +171,24 @@
     .inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .inputs.three{grid-template-columns:1fr 1fr 1fr}
     .summary-row{display:flex;justify-content:space-between;gap:10px;align-items:center;color:var(--dim);font-size:12px}
+    .memory-hint{
+      display:none;
+      font-size:12px;
+      color:var(--dim);
+      line-height:1.45;
+      padding:9px 10px;
+      border:1px solid rgba(111,227,161,.16);
+      background:rgba(111,227,161,.055);
+      border-radius:14px;
+    }
+    .memory-hint strong{color:var(--ink)}
+    .memory-hint .note-preview{color:var(--dim2)}
+    .memory-actions{
+      display:none;
+      grid-template-columns:1fr 1fr;
+      gap:7px;
+    }
+    .memory-actions button{padding:8px 10px;font-size:12px;border-radius:12px}
     .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
     .row h2{margin-bottom:0}
     .section-label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;font-weight:900;color:var(--dim2);margin:16px 2px 8px}
@@ -409,6 +427,11 @@
       <div class="inputs">
         <input class="weight" type="number" inputmode="decimal" placeholder="kg">
         <input class="note" type="text" placeholder="note / RPE">
+      </div>
+      <div class="memory-hint"></div>
+      <div class="memory-actions">
+        <button class="secondary small use-last" type="button">Use last</button>
+        <button class="secondary small use-pr" type="button">Use PR</button>
       </div>
       <div class="summary-row">
         <span class="volume">Volume: 0 kg</span>
@@ -687,6 +710,28 @@
         const note = $('.note', node);
         weight.value = e.weight || '';
         note.value = e.note || '';
+
+        const mem = getExerciseMemoryFor(e.name);
+        const memoryHint = $('.memory-hint', node);
+        const memoryActions = $('.memory-actions', node);
+        if(mem && (mem.last || mem.pr || mem.note)){
+          const dateLabel = mem.date ? new Date(mem.date).toLocaleDateString([], {month:'short', day:'2-digit'}) : '';
+          weight.placeholder = mem.last ? `Last ${mem.last} kg${mem.pr ? ` • PR ${mem.pr}` : ''}` : (mem.pr ? `PR ${mem.pr} kg` : 'kg');
+          memoryHint.style.display = 'block';
+          memoryHint.innerHTML = [
+            mem.last ? `<strong>Last:</strong> ${escapeHtml(mem.last)} kg${dateLabel ? ` <span class="note-preview">(${escapeHtml(dateLabel)})</span>` : ''}` : '',
+            mem.pr ? `<strong>PR:</strong> ${escapeHtml(mem.pr)} kg` : '',
+            mem.note ? `<span class="note-preview">${escapeHtml(mem.note)}</span>` : ''
+          ].filter(Boolean).join(' • ');
+          memoryActions.style.display = 'grid';
+          const useLast = $('.use-last', node);
+          const usePr = $('.use-pr', node);
+          useLast.disabled = !mem.last;
+          usePr.disabled = !mem.pr;
+          listen(useLast,'click',()=>{ weight.value = mem.last || ''; e.weight = weight.value; saveActive(); updateExerciseVolume(card,e); });
+          listen(usePr,'click',()=>{ weight.value = mem.pr || ''; e.weight = weight.value; saveActive(); updateExerciseVolume(card,e); });
+        }
+
         const saveWeight = ()=>{ e.weight = weight.value; saveActive(); updateExerciseVolume(card,e); };
         const saveNote = ()=>{ e.note = note.value; saveActive(); };
         listen(weight,'input',saveWeight);
@@ -916,37 +961,79 @@
       }catch(err){ console.warn('Cloud sync failed', err); }
     }
 
-    function renderExerciseMemory(){
-      const rows = $('#exerciseMemoryRows');
-      if(!rows) return;
+    function normalizeExerciseName(name){
+      return String(name || '')
+        .toLowerCase()
+        .replace(/\([^)]*\)/g,'')
+        .replace(/[–—-]/g,' ')
+        .replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ]+/gi,' ')
+        .replace(/\s+/g,' ')
+        .trim();
+    }
 
+    function recordDetails(record){
+      if(Array.isArray(record?.details)) return record.details;
+      if(typeof record?.details === 'string'){
+        try{
+          const parsed = JSON.parse(record.details);
+          if(Array.isArray(parsed)) return parsed;
+          if(Array.isArray(parsed?.details)) return parsed.details;
+        }catch(_){}
+      }
+      return [];
+    }
+
+    function buildExerciseMemory(){
       const memory = new Map();
       const strength = store.records
-        .filter(r=>r.type==='strength' && Array.isArray(r.details))
+        .filter(r=>r.type==='strength')
         .sort((a,b)=>new Date(b.date).getTime() - new Date(a.date).getTime());
 
       strength.forEach(record=>{
-        record.details.forEach(detail=>{
-          const name = String(detail.name || '').trim();
-          if(!name) return;
+        recordDetails(record).forEach(detail=>{
+          const rawName = String(detail.name || '').trim();
+          const key = normalizeExerciseName(rawName);
+          if(!key) return;
 
           const setsDone = number(detail.setsDone);
           const weight = number(detail.weight);
           const note = String(detail.note || '').trim();
           if(!setsDone && !weight && !note) return;
 
-          if(!memory.has(name)){
-            memory.set(name, {name, last:'', pr:0, note:'', date:record.date});
+          if(!memory.has(key)){
+            memory.set(key, {key, name:rawName, last:'', pr:0, note:'', date:record.date});
           }
 
-          const item = memory.get(name);
-          if(!item.last && weight) item.last = weight;
+          const item = memory.get(key);
+          if(!item.last && weight){
+            item.last = weight;
+            item.date = record.date;
+          }
           if(weight > item.pr) item.pr = weight;
           if(!item.note && note) item.note = note;
         });
       });
 
-      const entries = Array.from(memory.values()).sort((a,b)=>new Date(b.date).getTime() - new Date(a.date).getTime());
+      return memory;
+    }
+
+    function getExerciseMemoryFor(name){
+      const key = normalizeExerciseName(name);
+      const memory = buildExerciseMemory();
+      if(memory.has(key)) return memory.get(key);
+
+      // Fallback: partial match for renamed variants such as "Lat Pulldown" vs "Lat Pulldown (wide grip)".
+      const entries = Array.from(memory.values());
+      return entries.find(item => item.key && (item.key.includes(key) || key.includes(item.key))) || null;
+    }
+
+    function renderExerciseMemory(){
+      const rows = $('#exerciseMemoryRows');
+      if(!rows) return;
+
+      const entries = Array.from(buildExerciseMemory().values())
+        .sort((a,b)=>new Date(b.date).getTime() - new Date(a.date).getTime());
+
       rows.innerHTML = entries.map(item=>`
         <tr>
           <td>${escapeHtml(item.name)}</td>
